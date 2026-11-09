@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Things to explore in Dhaka</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<style>
+  .slider { position: relative; border-radius: 6px; overflow: hidden; background: var(--surface); }
+  .track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .track::-webkit-scrollbar { display: none; }
+  .track img {
+    flex: 0 0 100%;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    scroll-snap-align: start;
+  }
+  .slider-next {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 0;
+    background: rgba(8,24,18,0.6);
+    color: #ffffff;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .slider-next:hover { background: rgba(8,24,18,0.85); }
+  .dots {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+  .dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+  }
+  .dots span.on { background: #ffffff; }
+
+  /* Museum band: full viewport width, two equal columns, text on light gray, photo fills its column */
+  :root { --panel-gray: #ebeee9; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --panel-gray: #17221e; } }
+  :root[data-theme="dark"] { --panel-gray: #17221e; }
+  @media (min-width: 600px) {
+    .feature.feature-split {
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
+      grid-template-columns: 1fr 1fr;
+      align-items: stretch;
+      height: 460px;
+      gap: 0;
+    }
+    .feature-split > div:first-child {
+      background: var(--panel-gray);
+      padding: 40px clamp(24px, 5vw, 72px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+    }
+    .feature-split h3 { font-size: clamp(22px, 2.4vw, 28px); font-weight: 600; }
+    .feature-split p:not(.label) { font-size: 15px; line-height: 1.7; max-width: none; margin-top: 14px; }
+    /* Mirrored band: photo on the left, text on the right */
+    .feature-split.reverse > div:first-child { order: 2; }
+    .feature-split.reverse > .slider { order: 1; }
+  }
+  .feature-split .slider { height: 100%; min-height: 0; margin: 0; border-radius: 0; background: none; }
+  .feature-split .track { height: 100%; }
+  .feature-split .track img { height: 100%; width: 100%; aspect-ratio: auto; border-radius: 0; object-fit: cover; }
+  .feature-split .slider-next { right: 16px; }
+  .panel.photo video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .photo-fill { height: 100%; min-height: 0; overflow: hidden; }
+  video.sharp { filter: url(#sharpen); }
+  .card-photo { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; margin: 10px 0 12px; }
+  .card-video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; margin: 10px 0 12px; background: #000; }
+  /* Soft fade between the sights and the things to do */
+  .transition {
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to bottom, var(--bg), var(--surface) 60%, var(--surface));
+    margin-top: -40px;
+    position: relative;
+    z-index: 0;
+  }
+  .transition p {
+    color: var(--muted);
+    font-family: var(--display);
+    font-style: italic;
+    font-size: clamp(20px, 2.4vw, 26px);
+    text-align: center;
+  }
+  .photo-fill img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  @media (max-width: 599px) {
+    .feature-split .slider { height: 320px; }
+    .feature-split > div:first-child { padding: 32px 0 24px; }
+  }
+.photo-slot { aspect-ratio: 4 / 3; background: var(--line); border-radius: 8px; margin: 12px 0; }
+img.photo-slot { width: 100%; object-fit: cover; }
+.restaurants { align-items: stretch; }.resto .kind { margin-top: 14px; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="sharpen" color-interpolation-filters="sRGB">
+    <feConvolveMatrix order="3" kernelMatrix="0 -0.6 0 -0.6 3.4 -0.6 0 -0.6 0" preserveAlpha="true"/>
+  </filter>
+</svg>
+
+<header class="subhero">
+  <div class="wrap">
+    <a class="back" href="index.html">← Back to Discover Dhaka</a>
+    <h1>Things to explore</h1>
+    <p>Start at the National Museum, then the Military Museum, then head to Dhaka's heritage, shopping malls and restaurants.</p>
+  </div>
+</header>
+
+<main>
+<section id="activities">
+  <div class="wrap">
+    <div class="feature-list">
+
+      <article class="feature feature-split">
+        <div>
+          <p class="label">Museum</p>
+          <h3>Bangladesh National Museum</h3>
+          <p>Housed in the cultural heart of Shahbag, Dhaka, the Bangladesh National Museum stands as South Asia's premier multidisciplinary repository. Spanning four comprehensive floors, its extensive collections range from ancient archaeological antiquities and medieval coinage to modern art and poignant archives of the 1971 Liberation War, preserving the diverse tapestry of Bengal's natural, historical, and cultural heritage.</p>
+        </div>
+        <div class="slider" id="slider-museum" aria-roledescription="carousel" aria-label="Bangladesh National Museum photos">
+          <div class="track">
+            <img src="mil1.jpg" alt="Museum building">
+            <img src="mil2.png" alt="A large painted boat in the museum gallery">
+            <img src="mil3.jpeg" alt="Old silver coins in a display case">
+            <img src="mil4.jpeg" alt="A row of swords in a glass display case">
+            <img src="mil6.jpg" alt="Armour, helmets and shields in a museum display">
+            <img src="mil7.jpeg" alt="A whale skeleton in a gallery">
+            <img src="mil5.jpeg" alt="Embroidered robes in a display case">
+            <img src="mil9.jpeg" alt="Pottery in a museum gallery">
+          </div>
+          <button class="slider-next" aria-label="Next photo">›</button>
+          <div class="dots"></div>
+        </div>
+      </article>
+
+      <article class="feature feature-split reverse">
+        <div>
+          <p class="label">Military</p>
+          <h3>Bangladesh Military Museum</h3>
+          <p>The Bangladesh Military Museum, located in Bijoy Sarani, Dhaka, showcases the history and achievements of the Bangladesh Armed Forces. Its exhibits include military weapons, aircraft, tanks, uniforms, and historical artifacts, highlighting the nation's military heritage, the Liberation War, and its journey toward modern defence capabilities.</p>
+        </div>
+        <div class="slider" id="slider-military" aria-roledescription="carousel" aria-label="Bangladesh Military Museum photos">
+          <div class="track">
+            <img src="ml1.jpg" alt="Panoramic view of the museum grounds">
+            <img src="ml2.jpg" alt="The museum plaza">
+            <img src="ml3.jpg" alt="Museum display">
+            <img src="ml4.jpg" alt="Victory monument">
+            <img src="ml5.jpg" alt="Navy exhibit">
+            <img src="ml6.jpg" alt="Museum display">
+          </div>
+          <button class="slider-next" aria-label="Next photo">›</button>
+          <div class="dots"></div>
+        </div>
+      </article>
+
+      <article class="feature feature-split">
+        <div>
+          <p class="label">Heritage</p>
+          <h3>Curzon Hall</h3>
+          <p>Curzon Hall, a prominent example of British Raj architecture, was originally intended to be a town hall and is now home to the Faculty of Science at the University of Dhaka.</p>
+        </div>
+        <div class="photo-fill"><img src="ch1.jpeg" alt="Curzon Hall, a red-brick building with domes and palm trees"></div>
+      </article>
+
+      <article class="feature">
+        <div>
+          <p class="label">Heritage</p>
+          <h3>Lalbagh Fort</h3>
+          <p>A 17th-century Mughal fort with a tomb, a mosque and gardens. Go in the late afternoon for softer light.</p>
+        </div>
+        <div class="panel photo"><video src="lalbagh.mp4" autoplay muted loop playsinline aria-label="Video of Lalbagh Fort"></video><span>Mughal fort, 17th century</span></div>
+      </article>
+
+
+
+
+
+
+      <article class="feature">
+        <div>
+          <p class="label">Craft</p>
+          <h3>Shopping for handicrafts</h3>
+          <p>Look for Jamdani sarees, Nakshi Kantha embroidery, brassware and terracotta at craft shops and at the Aarong stores around the city. Each piece is a sign of the skill of rural artisans.</p>
+        </div>
+        <div class="panel photo"><video class="sharp" src="shopping.mp4" autoplay muted loop playsinline aria-label="Video of the Aarong store in Banani"></video></div>
+      </article>
+
+
+      <article class="feature feature-split">
+        <div>
+          <p class="label">Food and culture</p>
+          <h3>Jatra Biroti</h3>
+          <p>If you are looking for a place to experience Bangladeshi culture, Jatra Biroti is a great choice. It brings together traditional handicrafts, clothing, cultural performances, folk music, and authentic Bangladeshi food. Visitors can enjoy popular local snacks such as fuchka and pitha, along with a variety of traditional desserts, while exploring the country's rich artistic and cultural heritage.</p>
+        </div>
+        <div class="slider" id="slider-jatra" aria-roledescription="carousel" aria-label="Jatra Biroti photos">
+          <div class="track">
+            <img src="jb1.jpeg" alt="Jatra Biroti">
+            <img src="jb2.jpeg" alt="Jatra Biroti">
+            <img src="jb3.webp" alt="Jatra Biroti">
+            <img src="jb4.jpeg" alt="Jatra Biroti">
+            <img src="jb5.jpeg" alt="Jatra Biroti">
+            <img src="jb6.jpg" alt="Jatra Biroti">
+          </div>
+          <button class="slider-next" aria-label="Next photo">›</button>
+          <div class="dots"></div>
+        </div>
+      </article>
+
+
+      <article class="feature">
+        <div>
+          <p class="label">Golf</p>
+          <h3>Bashundhara Golf Club</h3>
+          <p>A round at Bashundhara Golf Club. Book ahead and check the dress and guest rules.</p>
+        </div>
+        <div class="panel photo"><img src="golf2.jpeg" alt="Bashundhara Golf Club"><span>Bashundhara Golf Club</span></div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+
+<section id="things-to-do" class="section-alt">
+  <div class="wrap">
+    <div class="restaurants">
+      <article class="resto">
+        <p class="cuisine">Shopping</p>
+        <h3>Jamuna Future Park</h3>
+        <div class="slider" id="slider-jamuna" aria-roledescription="carousel" aria-label="Jamuna Future Park photos">
+          <div class="track">
+            <img src="jamuna1.jpg" alt="Shops and walkways inside Jamuna Future Park">
+            <img src="jamuna2.jpg" alt="The rooftop of Jamuna Future Park shopping mall">
+          </div>
+          <button class="slider-next" aria-label="Next photo">›</button>
+          <div class="dots"></div>
+        </div>
+        <p>One of Dhaka's largest shopping malls, and the ultimate destination for shopping, dining and entertainment.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="restaurants" class="section-alt">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="kicker">Where to eat</p>
+        <h2>Restaurants to try</h2>
+      </div>
+    </div>
+    <div class="restaurants">
+      <article class="resto">
+        <h3>La Meridien</h3>
+        <p>A large, creatively designed buffet with lively cooking stations where you can watch the chefs at work.</p>
+        <div class="slider" id="slider-meridien" aria-roledescription="carousel" aria-label="Le Méridien Dhaka photos">
+          <div class="track">
+            <img src="meridien1.jpeg" alt="The buffet hall at Le Méridien Dhaka with its cooking stations">
+            <img src="meridien2.jpeg" alt="The à la carte restaurant at Le Méridien Dhaka">
+            <img src="meridien3.jpeg" alt="Dining room at Le Méridien Dhaka">
+          </div>
+          <button class="slider-next" aria-label="Next photo">›</button>
+          <div class="dots"></div>
+        </div>
+        <p>Buffet and à la carte, both options.</p>
+        <p class="kind">Buffet and à la carte</p>
+      </article>
+      <article class="resto">
+        <h3>Kiyoshi</h3>
+        <p>Japanese cuisine in Gulshan-1, in a calm room with greenery beyond the windows.</p>
+        <img class="photo-slot" src="kiyoshi1.jpeg" alt="A round wooden dining table by the windows at Kiyoshi, with greenery outside">
+        <p class="kind">Japanese</p>
+      </article>
+      <article class="resto">
+        <h3>Teppanyaki</h3>
+        <img class="photo-slot" src="teppanyaki1.png" alt="A sushi counter with plates on a moving belt, decorated with bonsai trees and kimono dolls">
+        <p>Your food is cooked in front of you on a hot iron griddle, with seafood, meat and vegetables grilled to order.</p>
+        <p class="kind">Teppanyaki</p>
+      </article>
+      <article class="resto">
+        <h3>Thai Emerald</h3>
+        <img class="photo-slot" src="thaiemerald1.jpeg" alt="The warmly lit dining room at Thai Emerald, with brick walls and set tables">
+        <p>Authentic Thai cooking, recognised with a Thai SELECT Signature certificate.</p>
+        <p class="kind">Thai</p>
+      </article>
+      <article class="resto">
+        <h3>Sarn</h3>
+        <p>A Thai restaurant known for its Thai-style tabletop barbecue and hotpot, where you cook your own meat and seafood at the table.</p>
+        <div class="slider" id="slider-sarn" aria-roledescription="carousel" aria-label="Sarn photos">
+          <div class="track">
+            <img src="sarn1.jpeg" alt="The warmly lit dining room at Sarn, with wooden chairs and set tables">
+            <img src="sarn2.jpeg" alt="A spread of thinly sliced meats, seafood and vegetables at Sarn">
+          </div>
+          <button class="slider-next" aria-label="Next photo">›</button>
+          <div class="dots"></div>
+        </div>
+        <p class="kind">Thai</p>
+      </article>
+      <article class="resto">
+        <h3>Ban Busaba</h3>
+        <div class="slider" id="slider-banbusaba" aria-roledescription="carousel" aria-label="Ban Busaba photos">
+          <div class="track">
+            <img src="banbusaba1.webp" alt="Dining rooms at Ban Busaba, with a peacock painting, dark green walls and gold glass panels">
+            <img src="banbusaba2.jpeg" alt="A dining room at Ban Busaba with a long table and gold glass panels">
+          </div>
+          <button class="slider-next" aria-label="Next photo">›</button>
+          <div class="dots"></div>
+        </div>
+        <p class="kind">Thai</p>
+      </article>
+      <article class="resto">
+        <h3>Mamagocho</h3>
+        <img class="photo-slot" src="mamagocho1.jpeg" alt="A lounge with sofas, a fireplace and tall curtains at Mamagocho">
+        <p class="kind">Thai</p>
+      </article>
+      <article class="resto">
+        <h3>Ciao</h3>
+        <p>An authentic Italian restaurant with a warm, relaxed room and a bakery counter.</p>
+        <div class="slider" id="slider-ciao" aria-roledescription="carousel" aria-label="Ciao photos">
+          <div class="track">
+            <img src="ciao1.jpeg" alt="The warmly lit room at Ciao, with wicker lamps and a cake display">
+            <img src="ciao2.jpeg" alt="A wood-fired pizza with mushrooms, pepperoni and basil at Ciao">
+          </div>
+          <button class="slider-next" aria-label="Next photo">›</button>
+          <div class="dots"></div>
+        </div>
+        <p>Famous for its wood-fire pizza.</p>
+        <p class="kind">Italian</p>
+      </article>
+      <article class="resto">
+        <h3>Brio</h3>
+        <p>Authentic Italian cuisine in Gulshan 2.</p>
+        <img class="photo-slot" src="brio1.jpeg" alt="The dining room at Brio, with blue velvet chairs, wooden tables and a tall plant by the window">
+        <p class="kind">Italian</p>
+      </article>
+      <article class="resto">
+        <h3>Salam's Kitchen</h3>
+        <div class="slider" id="slider-salam" aria-roledescription="carousel" aria-label="Salam's Kitchen photos">
+          <div class="track">
+            <img src="salam2.jpeg" alt="The dining room at Salam's Kitchen, with teal banquettes and wooden tables">
+            <img src="salam1.jpeg" alt="Biryani and kebab plates on a marble table at Salam's Kitchen">
+          </div>
+          <button class="slider-next" aria-label="Next photo">›</button>
+          <div class="dots"></div>
+        </div>
+        <p>Kacchi biryani, with shahi mutton kacchi and chicken roast biryani among the popular picks.</p>
+        <p class="kind">Biryani</p>
+      </article>
+      <article class="resto">
+        <h3>North End Coffee Roasters</h3>
+        <p>Shahbuddin Ahmed Park</p>
+        <p>A cozy cafe in Shahabuddin Park, perfect for specialty coffee and relaxing in the greenery.</p>
+        <div class="slider" id="slider-northend" aria-roledescription="carousel" aria-label="Northend Shahbuddin Park photos">
+          <div class="track">
+            <img src="northend1.jpg" alt="The outdoor seating and glass front of Northend under large trees">
+            <img src="northend2.jpeg" alt="The indoor cafe at Northend with paper lanterns and guests at tables">
+          </div>
+          <button class="slider-next" aria-label="Next photo">›</button>
+          <div class="dots"></div>
+        </div>
+        <p class="kind">Cafe</p>
+      </article>
+    </div>
+  </div>
+</section>
+</main>
+
+
+<script>
+(function () {
+  // Each slider on the page gets the same behaviour: auto-advance every 2 seconds,
+  // swipe or arrow to move, dots show the position, pause while touching or hovering.
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function initSlider(sl) {
+    if (!sl) return;
+    var track = sl.querySelector('.track');
+    var next = sl.querySelector('.slider-next');
+    var dotBox = sl.querySelector('.dots');
+    var slides = Array.prototype.slice.call(track.children);
+    var index = 0;
+    var timer = null;
+    var paused = false;
+
+    slides.forEach(function (_, n) {
+      var d = document.createElement('span');
+      if (n === 0) d.className = 'on';
+      dotBox.appendChild(d);
+    });
+    var dots = Array.prototype.slice.call(dotBox.children);
+
+    function show(n) {
+      index = (n + slides.length) % slides.length;
+      track.scrollTo({ left: slides[index].offsetLeft, behavior: 'smooth' });
+      dots.forEach(function (d, k) { d.className = k === index ? 'on' : ''; });
+    }
+    function start() {
+      stop();
+      timer = setInterval(function () { if (!paused) show(index + 1); }, 2000);
+    }
+    function stop() { if (timer) clearInterval(timer); timer = null; }
+
+    next.addEventListener('click', function () { show(index + 1); start(); });
+
+    var scrollTimer = null;
+    track.addEventListener('scroll', function () {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function () {
+        var w = track.clientWidth || 1;
+        var n = Math.round(track.scrollLeft / w);
+        if (n !== index) {
+          index = Math.min(Math.max(n, 0), slides.length - 1);
+          dots.forEach(function (d, k) { d.className = k === index ? 'on' : ''; });
+        }
+      }, 120);
+    });
+
+    track.addEventListener('pointerdown', function () { paused = true; });
+    track.addEventListener('pointerup', function () { paused = false; });
+    track.addEventListener('pointerleave', function () { paused = false; });
+
+    if (!reduce) start();
+  }
+
+  initSlider(document.getElementById('slider-museum'));
+  initSlider(document.getElementById('slider-military'));
+  initSlider(document.getElementById('slider-jatra'));
+  initSlider(document.getElementById('slider-meridien'));
+  initSlider(document.getElementById('slider-sarn'));
+  initSlider(document.getElementById('slider-banbusaba'));
+  initSlider(document.getElementById('slider-ciao'));
+  initSlider(document.getElementById('slider-salam'));
+  initSlider(document.getElementById('slider-northend'));
+  initSlider(document.getElementById('slider-jamuna'));
+})();
+</script>
+
+</body>
+</html>
